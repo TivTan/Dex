@@ -1,6 +1,6 @@
-import React, { useContext } from "react";
+import React from "react";
 import "./App.css";
-import { Symfoni, CurrentAddressContext } from "./hardhat/SymfoniContext";
+import { Symfoni  } from "./hardhat/SymfoniContext";
 import { Swap } from "./components/Swap";
 
 
