@@ -43,7 +43,7 @@ export const Swap: React.FC<Props> = ({ tokenA, tokenB }) => {
             setTokenBSymbol(await tokenBInstance.symbol());
         };
         fetchTokenSymbols();
-    }, [tokenA, tokenB]);
+    }, [ERC20Factory.instance, tokenA, tokenB]);
 
     useEffect(() => {
         const fetchExchangeAmount = async () => {
