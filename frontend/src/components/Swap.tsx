@@ -10,85 +10,85 @@ interface Props {
 
 export const Swap: React.FC<Props> = ({ tokenA, tokenB }) => {
     const ERC20Factory = useContext(ERC20Context);
-
-
+  
     const [tokenAInstance, setTokenAInstance] = useState<ERC20>();
     const [tokenBInstance, setTokenBInstance] = useState<ERC20>();
-
+  
     const [tokenASymbol, setTokenASymbol] = useState<string>();
     const [tokenBSymbol, setTokenBSymbol] = useState<string>();
-
+  
+    useEffect(() => {
+      if (ERC20Factory.instance) {
+        setTokenAInstance(ERC20Factory.instance!.attach(tokenA));
+        setTokenBInstance(ERC20Factory.instance!.attach(tokenB));
+      }
+    }, [ERC20Factory.instance, tokenA, tokenB]);
+  
+    useEffect(() => {
+      const fetchTokenSymbols = async () => {
+        if (!tokenAInstance || !tokenBInstance)  {
+          return;
+        }
+        
+        setTokenASymbol(await tokenAInstance.symbol());
+        setTokenBSymbol(await tokenBInstance.symbol());
+      };
+      fetchTokenSymbols();
+    }, [tokenAInstance, tokenBInstance])
+  
     const [amount, setAmount] = useState<number>(0);
-
+  
     const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setAmount(parseInt(event.target.value));
+      setAmount(parseInt(event.target.value));
     };
+  
     const router = useContext(UniswapV2Router02Context);
     const [exchangeAmount, setExchangeAmount] = useState<string>("0");
-
-
-
-
+  
     useEffect(() => {
-        if (ERC20Factory.instance) {
-            setTokenAInstance(ERC20Factory.instance!.attach(tokenA));
-            setTokenBInstance(ERC20Factory.instance!.attach(tokenB));
+      const fetchExchangeAmount = async () => {
+        if (!router.instance) {
+          console.log("router instance not found");
+          return;
         }
-    }, [ERC20Factory.instance, tokenA, tokenB]);
-    
-    useEffect(() => {
-        const fetchTokenSymbols = async () => {
-            if (!tokenAInstance || !tokenBInstance) {
-            return;
-            }
-            setTokenASymbol(await tokenAInstance.symbol());
-            setTokenBSymbol(await tokenBInstance.symbol());
-        };
-        fetchTokenSymbols();
-    }, [tokenA, tokenB]);
-
-    useEffect(() => {
-        const fetchExchangeAmount = async () => {
-            if (!router.instance) {
-                console.log("router instance not found");
-                return;
-            }
-
-            if (amount > 0) {
-                // router gets angry if you pass in a 0
-                const amountsOut = await router.instance.getAmountsOut(
-                    ethers.utils.parseEther(amount.toString()),
-                    [tokenA, tokenB]
-                );
-                setExchangeAmount(ethers.utils.formatUnits(amountsOut[1].toString(), 18));
-            }
-        };
-        fetchExchangeAmount();
-
-    }, [router.instance, amount, tokenA, tokenB]);
-
-
-
-    const [currentAddress] = useContext(CurrentAddressContext);
-
-    const handleSwap = async () => {
-        if (!router.instance || !tokenAInstance) {
-            console.log("Error. Router or token instance not found.");
-            return;
-        }
-        const time = Math.floor(Date.now() / 1000) + 3600;
-
-        await (await tokenAInstance.approve(router.instance.address, ethers.utils.parseEther(amount.toString())))
-            .wait();
-        await (await router.instance.swapExactTokensForTokens(
+  
+        if (amount > 0) {
+          // router gets angry if you pass in a 0
+          const amountsOut = await router.instance.getAmountsOut(
             ethers.utils.parseEther(amount.toString()),
-            0, // normally its not 0
-            [tokenA, tokenB],
-            currentAddress,
-            time
-        )).wait();
-
-
+            [tokenA, tokenB]
+          );
+          setExchangeAmount(ethers.utils.formatUnits(amountsOut[1].toString(), 18));
+        }
+      };
+  
+      fetchExchangeAmount();
+    }, [router.instance, amount, tokenA, tokenB]);
+  
+    const [currentAddress] = useContext(CurrentAddressContext);
+  
+    const handleSwap = async () => {
+      if (!router.instance || !tokenAInstance) {
+        console.log("router or token instance not found");
+        return;
+      }
+      const time = Math.floor(Date.now() / 1000) + 3600;
+  
+      await (
+        await tokenAInstance.approve(
+          router.instance.address,
+          ethers.utils.parseEther(amount.toString())
+        )
+      ).wait();
+      await (
+        await router.instance.swapExactTokensForTokens(
+          ethers.utils.parseEther(amount.toString()),
+          0, // we shouldn't leave this as 0, it is dangerous in real trading
+          [tokenA, tokenB],
+          currentAddress,
+          time
+        )
+      ).wait();
     };
 
     let z = Number(exchangeAmount) / Number(amount);
