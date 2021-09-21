@@ -6,6 +6,7 @@ import "hardhat-deploy";
 import "@symfoni/hardhat-react";
 import "hardhat-typechain";
 import "@typechain/ethers-v5";
+import "./tasks";
 
 require("dotenv").config();
 
@@ -25,8 +26,23 @@ task("accounts", "Prints the list of accounts", async (args, hre) => {
  * @type import('hardhat/config').HardhatUserConfig
  */
 const config: HardhatUserConfig = {
+  namedAccounts: {
+    deployer: {
+      default: 0,
+    },
+    dev: {
+      default: 1,
+    },
+  },
   react: {
     providerPriority: ["web3modal", "hardhat"],
+    providerOptions: {
+      walletconnect: {
+        options: {
+          infuraId: "919cb82452e545e68beb41593360ead3",          
+        },
+      },
+    },
   },
   networks: {
     hardhat: {
@@ -36,11 +52,15 @@ const config: HardhatUserConfig = {
         mnemonic: process.env.METAMASK_SEED_WORDS, // test test test test test test test test test test test junk
       },
     },
+    rinkeby: {
+      url: process.env.RINKEBY_URL,
+      accounts: [ process.env.ACCOUNT_1, process.env.ACCOUNT_2 ]
+    },
   },
   solidity: {
     compilers: [
       {
-        version: "0.8.6",
+        version: "0.6.12",
         settings: {
           optimizer: {
             enabled: true,
