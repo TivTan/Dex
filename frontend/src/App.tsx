@@ -14,7 +14,7 @@ function App() {
     <div className="App">
       <Symfoni autoInit={true} >
         <div className="min-h-screen bg-gray-500 font-sans border-box">
-          <div className="max-w-5xl mx-auto sm:px-6 lg:px-8" >                
+          <div className="max-w-6xl mx-auto sm:px-6 lg:px-8" >                
             <div className="text-gray-100 text-6xl pt-28 pb-10 border-1px">
               deX $wap
             </div>

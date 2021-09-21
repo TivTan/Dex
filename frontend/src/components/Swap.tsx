@@ -126,7 +126,7 @@ export const Swap: React.FC<Props> = ({ tokenA, tokenB }) => {
                             type="text"
                             name="Receive"
                             id="receive"
-                            className="w-32 rounded"
+                            className="w-28 rounded"
                             value={exchangeAmount}
                         />
 
