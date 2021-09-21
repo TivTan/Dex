@@ -8,7 +8,7 @@ function App() {
 
 
   
-  const [currentAddress] = useContext(CurrentAddressContext);
+  
 
   return (
     <div className="App">
