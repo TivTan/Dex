@@ -34,7 +34,9 @@ export const Swap: React.FC<Props> = ({ tokenA, tokenB }) => {
             setTokenAInstance(ERC20Factory.instance!.attach(tokenA));
             setTokenBInstance(ERC20Factory.instance!.attach(tokenB));
         }
-
+    }, [ERC20Factory.instance, tokenA, tokenB]);
+    
+    useEffect(() => {
         const fetchTokenSymbols = async () => {
             if (!tokenAInstance || !tokenBInstance) {
             return;
@@ -43,7 +45,7 @@ export const Swap: React.FC<Props> = ({ tokenA, tokenB }) => {
             setTokenBSymbol(await tokenBInstance.symbol());
         };
         fetchTokenSymbols();
-    }, [ERC20Factory.instance, tokenA, tokenB]);
+    }, [tokenA, tokenB]);
 
     useEffect(() => {
         const fetchExchangeAmount = async () => {
@@ -67,7 +69,7 @@ export const Swap: React.FC<Props> = ({ tokenA, tokenB }) => {
 
 
 
-    const [currentAddress, setCurrentAddress] = useContext(CurrentAddressContext);
+    const [currentAddress] = useContext(CurrentAddressContext);
 
     const handleSwap = async () => {
         if (!router.instance || !tokenAInstance) {
